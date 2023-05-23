@@ -6,3 +6,8 @@ __pycache__
 
 # Downloaded Assets
 downloads
+
+# by meta
+.venv
+*.pb
+*.pth

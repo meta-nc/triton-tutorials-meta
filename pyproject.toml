@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "TRTIS Client"
+version = "0.1.0"
+description = ""
+authors = ["meta <meta@ncsoft.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8.11"
+tritonclient = {extras = ["http"], version = "^2.33.0"}
+opencv-python-headless = "^4.7.0.72"
+numpy = "^1.24.3"
+
+[tool.poetry.group.dev.dependencies]
