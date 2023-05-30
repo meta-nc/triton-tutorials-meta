@@ -1,0 +1,139 @@
+*** Measurement Settings ***
+  Batch size: 2
+  Service Kind: Triton
+  Using "time_windows" mode for stabilization
+  Measurement window: 5000 msec
+  Latency limit: 0 msec
+  Concurrency limit: 16 concurrent requests
+  Using synchronous calls for inference
+  Stabilizing using p95 latency
+
+Request concurrency: 2
+  Client: 
+    Request count: 9391
+    Throughput: 1043.33 infer/sec
+    p50 latency: 3814 usec
+    p90 latency: 3901 usec
+    p95 latency: 3918 usec
+    p99 latency: 3941 usec
+    Avg HTTP time: 3831 usec (send/recv 22 usec + response wait 3809 usec)
+  Server: 
+    Inference count: 18782
+    Execution count: 9391
+    Successful request count: 9391
+    Avg request latency: 3719 usec (overhead 14 usec + queue 1811 usec + compute input 11 usec + compute infer 1874 usec + compute output 7 usec)
+
+Request concurrency: 4
+  Client: 
+    Request count: 9354
+    Throughput: 1039.24 infer/sec
+    p50 latency: 7639 usec
+    p90 latency: 7822 usec
+    p95 latency: 7855 usec
+    p99 latency: 7894 usec
+    Avg HTTP time: 7694 usec (send/recv 22 usec + response wait 7672 usec)
+  Server: 
+    Inference count: 18708
+    Execution count: 9354
+    Successful request count: 9354
+    Avg request latency: 7579 usec (overhead 14 usec + queue 5665 usec + compute input 12 usec + compute infer 1880 usec + compute output 7 usec)
+
+Request concurrency: 6
+  Client: 
+    Request count: 9348
+    Throughput: 1038.58 infer/sec
+    p50 latency: 11472 usec
+    p90 latency: 11756 usec
+    p95 latency: 11794 usec
+    p99 latency: 11852 usec
+    Avg HTTP time: 11550 usec (send/recv 22 usec + response wait 11528 usec)
+  Server: 
+    Inference count: 18696
+    Execution count: 9348
+    Successful request count: 9348
+    Avg request latency: 11439 usec (overhead 14 usec + queue 9523 usec + compute input 12 usec + compute infer 1881 usec + compute output 7 usec)
+
+Request concurrency: 8
+  Client: 
+    Request count: 9360
+    Throughput: 1039.91 infer/sec
+    p50 latency: 15278 usec
+    p90 latency: 15627 usec
+    p95 latency: 15688 usec
+    p99 latency: 15767 usec
+    Avg HTTP time: 15381 usec (send/recv 22 usec + response wait 15359 usec)
+  Server: 
+    Inference count: 18720
+    Execution count: 9360
+    Successful request count: 9360
+    Avg request latency: 15269 usec (overhead 13 usec + queue 13356 usec + compute input 12 usec + compute infer 1880 usec + compute output 7 usec)
+
+Request concurrency: 10
+  Client: 
+    Request count: 9391
+    Throughput: 1043.34 infer/sec
+    p50 latency: 19029 usec
+    p90 latency: 19466 usec
+    p95 latency: 19556 usec
+    p99 latency: 19715 usec
+    Avg HTTP time: 19162 usec (send/recv 28 usec + response wait 19134 usec)
+  Server: 
+    Inference count: 18782
+    Execution count: 9391
+    Successful request count: 9391
+    Avg request latency: 19040 usec (overhead 14 usec + queue 17131 usec + compute input 11 usec + compute infer 1876 usec + compute output 7 usec)
+
+Request concurrency: 12
+  Client: 
+    Request count: 9376
+    Throughput: 1041.67 infer/sec
+    p50 latency: 22888 usec
+    p90 latency: 23391 usec
+    p95 latency: 23502 usec
+    p99 latency: 23658 usec
+    Avg HTTP time: 23030 usec (send/recv 24 usec + response wait 23006 usec)
+  Server: 
+    Inference count: 18752
+    Execution count: 9376
+    Successful request count: 9376
+    Avg request latency: 22915 usec (overhead 14 usec + queue 21004 usec + compute input 11 usec + compute infer 1877 usec + compute output 7 usec)
+
+Request concurrency: 14
+  Client: 
+    Request count: 9390
+    Throughput: 1043.24 infer/sec
+    p50 latency: 26740 usec
+    p90 latency: 27114 usec
+    p95 latency: 27287 usec
+    p99 latency: 27783 usec
+    Avg HTTP time: 26830 usec (send/recv 22 usec + response wait 26808 usec)
+  Server: 
+    Inference count: 18782
+    Execution count: 9391
+    Successful request count: 9391
+    Avg request latency: 26720 usec (overhead 14 usec + queue 24812 usec + compute input 12 usec + compute infer 1874 usec + compute output 7 usec)
+
+Request concurrency: 16
+  Client: 
+    Request count: 9417
+    Throughput: 1046.24 infer/sec
+    p50 latency: 30480 usec
+    p90 latency: 30777 usec
+    p95 latency: 30929 usec
+    p99 latency: 31513 usec
+    Avg HTTP time: 30575 usec (send/recv 22 usec + response wait 30553 usec)
+  Server: 
+    Inference count: 18836
+    Execution count: 9418
+    Successful request count: 9418
+    Avg request latency: 30462 usec (overhead 14 usec + queue 28560 usec + compute input 12 usec + compute infer 1869 usec + compute output 7 usec)
+
+Inferences/Second vs. Client p95 Batch Latency
+Concurrency: 2, throughput: 1043.33 infer/sec, latency 3918 usec
+Concurrency: 4, throughput: 1039.24 infer/sec, latency 7855 usec
+Concurrency: 6, throughput: 1038.58 infer/sec, latency 11794 usec
+Concurrency: 8, throughput: 1039.91 infer/sec, latency 15688 usec
+Concurrency: 10, throughput: 1043.34 infer/sec, latency 19556 usec
+Concurrency: 12, throughput: 1041.67 infer/sec, latency 23502 usec
+Concurrency: 14, throughput: 1043.24 infer/sec, latency 27287 usec
+Concurrency: 16, throughput: 1046.24 infer/sec, latency 30929 usec

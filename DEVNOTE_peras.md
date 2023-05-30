@@ -1,8 +1,42 @@
 # DEVNOTE
 
-## Conceptual Guide :: Part 1
+## 0. Preparation
 
-### Server
+### 0.1 Virtual Env (pyenv + poetry)
+
+```bash
+# install pyenv
+curl https://pyenv.run | bash
+
+# install poetry
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+```bash
+pyenv versions
+pyenv install 3.9.15
+
+cd to/project/root # triton-tutorials-meta
+
+pyenv shell 3.9.15
+poetry env use $(pyenv which python)
+poetry install
+# message: Failed to create the collection: Prompt dismissed..
+# ==> export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+
+poetry show
+poetry debug info
+```
+
+### 0.2 On a third terminal, it is advisable to monitor the GPU Utilization to see if the deployment is saturating GPU resources.
+
+```bash
+watch -n0.1 -d nvidia-smi
+```
+
+## 1. Conceptual Guide :: Part 1
+
+### 1.1 Server
 
 #### Change Directory
 
@@ -57,43 +91,36 @@ python convert_CTC_pth_to_onnx.py
 
 ```bash
 docker run --gpus=all -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3
+docker run --gpus=1 -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 # gpu count == 1 (not gpu id)
+docker run --gpus='"device=2,3"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3
 
 # in container
 tritonserver --model-repository=/models
 ```
 
-### Client
-
-#### Virtual Env (pyenv + poetry)
-
-```bash
-pyenv versions
-pyenv install 3.9.15
-
-pyenv shell 3.9.15
-poetry env use $(pyenv which python)
-poetry install
-# message: Failed to create the collection: Prompt dismissed..
-# ==> export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-
-poetry show
-poetry debug info
-```
+### 1.2 Client
 
 #### Run
 
 ```bash
+# w/o docker (recommanded)
 poetry run python client.py
+
+# w/ docker
+docker run --gpus=all -it --rm --net=host --name triton-tut-part1-client -v $(pwd):/workspace python:3.9.16 bash
+pip install tritonclient[http] opencv-python-headless
+cd /workspace
+python client.py
 ```
 
-## Conceptual Guide :: Part 2
+## 2. Conceptual Guide :: Part 2
 
-### Server
+### 2.1 Server
 
 #### Change Directory
 
 ```bash
-cd Conceptual_Guide/Part_1-model_deployment  # stay in Part 1
+cd Conceptual_Guide/Part_1-model_deployment # stay in Part 1
 ```
 
 #### Convert "None-ResNet-None-CTC.pth" to "str_batch.onnx"
@@ -108,22 +135,34 @@ python convert_CTC_pth_to_onnx_batch.py
 #### Change Directory
 
 ```bash
-cd ../Part_2-improving_resource_utilization
+cd Conceptual_Guide/Part_2-improving_resource_utilization # Part 2
 ```
 
-#### On a third terminal, it is advisable to monitor the GPU Utilization to see if the deployment is saturating GPU resources.
+#### Setting up the model repository
 
 ```bash
-watch -n 0.1 nvidia-smi
+# triton-tutorials-meta/Conceptual_Guide/Part_2-improving_resource_utilization/model_repository/text_recognition/1
+
+...
 ```
 
-### Performance Test 1 (Use config.1.pbtxt)
+### 2.2 Performance Test
 
-`No Dynamic Batching, single model instance`
+```bash
+cd Conceptual_Guide/Part_2-improving_resource_utilization # Part 2
+```
+
+#### 2.2.1 No Dynamic Batching, single model instance
+
+`Use config.1.pbtxt`
 
 ```bash
 # Server
 docker run --gpus=1 -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=1"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=2"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
 
 # in container
 tritonserver --model-repository=/models
@@ -134,16 +173,20 @@ tritonserver --model-repository=/models
 docker run -it --net=host -v $(pwd):/workspace/ nvcr.io/nvidia/tritonserver:23.04-py3-sdk bash
 
 # in container
-perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95
+perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95 > perf.1.log
 ```
 
-### Performance Test 2 (Use config.2.pbtxt)
+#### 2.2.2 Just Dynamic Batching
 
-`Just Dynamic Batching`
+`Use config.2.pbtxt`
 
 ```bash
 # Server
 docker run --gpus=1 -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=1"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=2"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
 
 # in container
 tritonserver --model-repository=/models
@@ -154,16 +197,20 @@ tritonserver --model-repository=/models
 docker run -it --net=host -v $(pwd):/workspace/ nvcr.io/nvidia/tritonserver:23.04-py3-sdk bash
 
 # in container
-perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95
+perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95 > perf.2.log
 ```
 
-### Performance Test 3 (Use config.3.pbtxt)
+#### 2.2.3 Dynamic Batching with multiple model instances
 
-`Dynamic Batching with multiple model instances`
+`Use config.3.pbtxt`
 
 ```bash
 # Server
 docker run --gpus=1 -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=1"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
+
+docker run --gpus='"device=2"' -it --shm-size=256m --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd):/workspace/ -v $(pwd)/model_repository:/models nvcr.io/nvidia/tritonserver:23.04-py3 bash
 
 # in container
 tritonserver --model-repository=/models
@@ -174,13 +221,13 @@ tritonserver --model-repository=/models
 docker run -it --net=host -v $(pwd):/workspace/ nvcr.io/nvidia/tritonserver:23.04-py3-sdk bash
 
 # in container
-perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95
+perf_analyzer -m text_recognition -b 2 --shape input.1:1,32,100 --concurrency-range 2:16:2 --percentile=95 > perf.3.log
 ```
 
-## Conceptual Guide :: Part 3
+## 3. Conceptual Guide :: Part 3
 
-## Conceptual Guide :: Part 4
+## 4. Conceptual Guide :: Part 4
 
-## Conceptual Guide :: Part 5
+## 5. Conceptual Guide :: Part 5
 
-## Conceptual Guide :: Part 6
+## 6. Conceptual Guide :: Part 6
